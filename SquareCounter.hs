@@ -1,3 +1,4 @@
+import Data.Set as Set
 import Data.List
 
 twoadic :: (Integral a) => a -> a
@@ -32,7 +33,10 @@ algo k =
 -- changing the power of 2 and then changing the power of 3
 
 cleanNeighbors :: [Int] -> [Int]
-cleanNeighbors x = concat [algo k | k <- x] \\ x
+cleanNeighbors x = 
+	let set2 = Set.fromList (concat [algo k | k <- x]);
+		set1 = Set.fromList x
+	in Set.toList (Set.difference set2 set1)
 
 -- Given a list of numbers, find the neighbors for all of the numbers excluding numbers already in the given list
 
@@ -50,7 +54,7 @@ orderlessList a b = not (sort a == sort b)
 
 filterList :: (Ord a) => [[a]] -> [[a]]
 filterList []		= []
-filterList (x:xs)	= x : filterList (filter (orderlessList x) xs)
+filterList (x:xs)	= x : filterList (Data.List.filter (orderlessList x) xs)
 
 -- Filter out duplicates from whatever list of lists we're given
 
@@ -61,15 +65,15 @@ fullChain l = filterList (concat [neighborList k | k <- l])
 
 intStep :: Int -> Int -> [[Int]]
 intStep x k
-	| x == 0		= [[k]]
+	| x == 1		= [[k]]
 	| otherwise		= fullChain (intStep (x-1) k)
 
 -- Used to start at 1 but now at k since we want to be able to move in all 4 directions. "Symmetry" didn't work/I couldn't
--- get it to work. So each iteration puts k at the center of a 2nx2n grid with powers of 2 on one side and powers of 3 on the other
+-- get it to work. So each iteration puts k at the center of a (2n+1)x(2n+1) grid with powers of 2 on one side and powers of 3 on the other
 
 calculate :: Int -> Int
 calculate k =
-	let seed = (2^k)*(3^k)
+	let seed = (2^(k-1))*(3^(k-1))
 	in length(intStep k seed)
 
 -- Final function to calculate the number of possible arrangements. 
