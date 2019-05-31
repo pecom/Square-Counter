@@ -47,6 +47,3 @@ def main_loop(n = 5, size=2):
         shapes.append(iterate(h))
         print(len(h))
         
-
-
-main_loop(4,3)
